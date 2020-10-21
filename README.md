@@ -32,18 +32,18 @@ Cette partie du TP est découpée en 4 grandes parties avec pour chacune des par
 
 ### Création de la base de données des protéines
 
-#### Questions: 
+#### Questions: (ProteomeXchange PXD011286)
 
 ##### En quoi consiste l’approche Shotgun proteomics?
 
 ```
-
+L'approche Shotgun consiste à identifié des protéine grace à une migration par chromatographie puis une spéctométrie de masse.
 ```
 
 ##### Quel est l’objectif de cette approche ?
 
 ```
-
+Identifié les protéines d'un échantillon grace a la specto de masse via du bottom up (digestion protéine a la tripsine) -> recheche biomarqueur
 ```
 
 #### Procédure
@@ -59,38 +59,40 @@ Cette partie du TP est découpée en 4 grandes parties avec pour chacune des par
 ##### L’identification des protéines/ peptides se réalise grâce à une base de données de protéines. Quelle comparaison va être effectuée?
 
 ```
-
+Comparaison liste peptide théorique issu digestion tripsique in silico contre base de données de protéomes
 ```
 
 ##### Existe t’il d’autres types de bases de données pour réaliser l’identification des peptides trypsiques dans un spectre?
 
 ```
-
+Librairie spectrale
+Données Transcriptomiques
 ```
 
 ##### Est-ce qu’il est possible d’identifier des peptides sans base de données?
 ```
-
+Oui (Librairie spectrale)
 ```
 ##### Combien de protéines sont identifiées dans le protéome bactérien?
 ```
-
+4391
 ```
 ##### Comment la liste des séquences des protéines est-elle établie ? Est-elle complète? 
 ```
-
+Les séquences protéique proviennent de base de données. Elles ont été soumises par des laboratoires de recherche ayant séquencer ses dernières. Ces séquences peuvent avoir été vérifiés ou elles peuvent être hypothétique car elles ont été générées avec des méthodes de novo.
 ```
 ##### Quelle est la différence entre des séquences Swiss-prot et TremBL?
 ```
-
+SwissProt annoté manuellement, fiable
+TremBl Annontation automatique in silico
 ```
 ##### A quoi correspond la protéine P00761 et quelle est sa fonction ? 
 ```
-
+Elle correspond à la tryspine et elle permet la digestion
 ```
 ##### Pourquoi doit-on rajouter cette protéine dans le fichier FASTA final du protéome bactérien?
 ```
-
+Pour s'affranchir de fausse identification
 ```
 
 ### Création de la « peak list »
@@ -137,28 +139,35 @@ NB : si vous avez des messages d’erreur qui s’affichent (missing precursor c
 #### Questions 
 ##### Pourquoi est-il important de bien choisir sa base de données?
 ```
+Une base de données mal annotée pourra induire des erreurs d'identification, de même si on choisi une base de données correspondant à un mauvais organisme de référence les résultats obtenus seront biaisés.
 ```
 ##### Est-ce que l’on retrouvera toujours les mêmes protéines au cours du temps ?
 ```
+Non, les bases de données évolue, si on refait la même analyse avec une base de données ayant évolue on trouvera des résultats différents
 ```
 
 ##### Comment la taille de la base de données peut affecter le score de la protéine recherchée?
 ```
+Plus une base de données est grande, plus la probabilité de trouvée la protéine recherche est elevée, cependant, il est également possible d'avoir un plus grand nombre de fausse annotation car l'identification pourra correspondre à plusieurs protéines. 
 ```
 
 ##### Est-ce que les modifications ajoutées sont les seules modifications que l’on peut attendre dans une expérience de shotgun proteomics?
 ```
+Non
 ```
 
 ##### Vous avez choisi la trypsine comme enzyme et choisi « specific », qu’est-ce que cela signifie, et comment cela peut affecter le processing ? 
 ```
+Spécifique car elle coupe bien après lysine et arginine, pas de coupe après d'autre aa. Peut causé des mauvaises identifications si non spé
 ```
 
 ##### Qu’est-ce qu’un missed cleavage ? pourquoi 2 et pas 0 ?
 ```
+Moment ou la Tryspine n'a pas coupé après une arginine ou une lysine. 
 ```
 ##### Qu’est-ce que la tolérance en masse, comment la calcule-t-on ?
 ```
+
 ```
 
 ### Visualisation des PSM, peptides - protéines
@@ -301,7 +310,10 @@ Representer graphiquement les données d'abondance et construire la pvalue des f
 
 ##### 3. A partir de cette échantillon de ratio d'abondance,  estimez la moyenne <img src="https://render.githubusercontent.com/render/math?math=\mu"> et l'ecart-type <img src="https://render.githubusercontent.com/render/math?math=\sigma"> d'une loi normale.
 ```
-
+mean=log2.mean()
+var=log2.shape[0]/(log2.shape[0]-1)*np.var(log2)
+Moyenne : -0.6386262156443276 
+Variance corrigée : 0.2216143620633058
 
 ```
 
@@ -309,19 +321,22 @@ Representer graphiquement les données d'abondance et construire la pvalue des f
 
 
 ```python
-hist = ax.hist(_, bins=100) # draw histogram
-x = np.linspace(min(_), max(_), 100) # generate PDF domain points
+from math import sqrt
+fig, ax = plt.subplots()
+hist = ax.hist(log2, bins=100) # draw histogram
+x = np.linspace(min(log2), max(log2), 100) # generate PDF domain points
 dx = hist[1][1] - hist[1][0] # Get single value bar height
-scale = len(_)*dx # scale accordingly
-ax.plot(x, norm.pdf(x, mu, sqrt(S_2))*scale) # compute theoritical PDF and draw it
+scale = len(log2)*dx # scale accordingly
+ax.plot(x, norm.pdf(x, mean, sqrt(var))*scale) # compute theoritical PDF and draw it
+fig.show()
 ```
 
-![Histogramme à inserez ici](histogram_log2FC.png "Title")
+(picture/histogram_log2FC.png "Histogramme Log2 Corrected Abundance Ratio")
 
 ##### 5. Quelles remarques peut-on faire à l'observation de l'histogramme et de loi théorique?
 
 ```
-
+L'histogramme semble correspondre à la loi théorique bien que légèrement exentré.
 
 ```
 
@@ -335,7 +350,7 @@ Sont condidérées comme surabondantes les proteines remplissant ces deux critè
 * <img src="https://render.githubusercontent.com/render/math?math=\text{Log}_2(\text{abundance ratio})\gt\mu%2B\sigma">  
 * <img src="https://render.githubusercontent.com/render/math?math=\text{p-value}>0.001">
 
-![Volcano plot + quadrant à inserez ici](histogram_log2FC.png "Title")
+![Volcano plot + quadrant à inserez ici](picture/volcanoplot.png "Volcanoplot")
 
 ### Analyse Fonctionelle de pathway
 
@@ -345,9 +360,20 @@ Nous allons implementer une approche ORA (Over Representation Analysis) naive.
 
 Quelles sont leurs identifiants UNIPROT ?
 ``` 
-
-
-
+P0A8V6
+P0A9Q1
+P02358
+P0ACF8
+P62399
+P0A905
+P76506
+P13036
+P10384
+P06971
+P0A910
+P06996
+P76344
+P02931
 ```
 
 #### 2. Lister les termes GO portés par ces protéines surabondates
