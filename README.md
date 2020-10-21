@@ -331,7 +331,7 @@ ax.plot(x, norm.pdf(x, mean, sqrt(var))*scale) # compute theoritical PDF and dra
 fig.show()
 ```
 
-(picture/histogram_log2FC.png "Histogramme Log2 Corrected Abundance Ratio")
+![Histogramme à inserez ici](picture/histogram_log2FC.png  "Histogramme Log2 Corrected Abundance Ratio")
 
 ##### 5. Quelles remarques peut-on faire à l'observation de l'histogramme et de loi théorique?
 
